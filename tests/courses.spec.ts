@@ -1,22 +1,21 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { GroupCoursesPage } from '../pages/GroupCoursesPage';
 
-// import { courseData, seriesData } from '../utils/testData';
+import { loginData, courseData, seriesData } from '../utils/testData';
 
-test('Check page title', async ({ page }) => {
+test('Create group course', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const dashboardPage = new DashboardPage(page);
   const groupCoursesPage = new GroupCoursesPage(page);
 
-  const username = "location-admin@test.com";
-  const password = "123qwe";
-  const passcode = "000000";
-  const pageTitle = "Group Courses"
-
-  await loginPage.login(username, password, passcode);
+  await loginPage.login(loginData);
   await dashboardPage.goToGroupCourses();
-  await groupCoursesPage.checkTitle(pageTitle);
+  await groupCoursesPage.createCourse(courseData);
+
+  // Check if the course is created
+  await expect(page).toHaveURL(groupCoursesPage.gcUrl);
+  await expect(page.getByText(courseData.name)).toBeVisible();
 
 });
